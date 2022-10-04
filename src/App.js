@@ -10,25 +10,30 @@ function App() {
   const [forecast, setForecast] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        setLatitude(position.coords.latitude);
-        setLongitude(position.coords.longitude);
+    navigator.geolocation.getCurrentPosition(function (position) {
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+    });
+
+    fetch(`${process.env.REACT_APP_API_URL}/weather/?latitude=${latitude}&longitude=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
+      .then(res => res.json())
+      .then(result => {
+
       });
 
-      await fetch(`${process.env.REACT_APP_API_URL}/weather/?latitude=${latitude}&longitude=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
-        .then(res => res.json())
-        .then(result => {
-         
-        });
-    }
-    fetchData();
 
   }, [latitude, longitude]);
 
   return (
     <div className="App">
-      {(typeof data.main != 'undefined') ? (<Weather weatherData={data}/>) : (<div></div>)}
+      {(typeof data.main != 'undefined') ? (
+        <div>
+          <Weather weatherData={data} />
+          <Forecast forecast={forecast} weatherData={weatherData} />
+        </div>
+      ) : (
+        <div>
+        </div>)}
     </div>
   );
 }
