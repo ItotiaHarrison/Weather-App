@@ -16,30 +16,37 @@ function App() {
       setLongitude(position.coords.longitude);
     });
 
-    fetch(`${process.env.REACT_APP_API_URL}/weather/?latitude=${latitude}&longitude=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
-      .then(res => res.json())
-      .then(result => {
 
-      });
+
 
 
   }, [latitude, longitude]);
 
-  return (
-    <div className="App">
-      {(typeof data.main != 'undefined') ? (
-        <div>
-          <Weather weatherData={data} />
-          <Forecast forecast={forecast} weatherData={weatherData} />
-        </div>
-      ) : (
-        <div>
-          <Dimmer active>
-            <Loader>Loading..</Loader>
-          </Dimmer>
-        </div>)}
-    </div>
-  );
-}
+  function getWeather(latitude, longitude) {
+    return fetch(`${process.env.REACT_APP_API_URL}/weather/?latitude=${latitude}&longitude=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
+      .then(res => res.json())
+      .then(weather => {
+        if (Object.entries(weather).length) {
+          const mappedData = mapDataToWeatherInterface(weather);
+          return mappedData;
+        }
+      });
 
-export default App;
+    return (
+      <div className="App">
+        {(typeof data.main != 'undefined') ? (
+          <div>
+            <Weather weatherData={data} />
+            <Forecast forecast={forecast} weatherData={weatherData} />
+          </div>
+        ) : (
+          <div>
+            <Dimmer active>
+              <Loader>Loading..</Loader>
+            </Dimmer>
+          </div>)}
+      </div>
+    );
+  }
+
+  export default App;
