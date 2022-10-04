@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Weather from './components/Weather';
 import Forecast from './components/Forecast';
+import { Dimmer, Loader } from 'semantic-ui-react';
 import './App.css';
 
 function App() {
@@ -33,6 +34,9 @@ function App() {
         </div>
       ) : (
         <div>
+          <Dimmer active>
+            <Loader>Loading..</Loader>
+          </Dimmer>
         </div>)}
     </div>
   );
