@@ -35,8 +35,6 @@ function App() {
         setError(err.message);
       });
 
-
-
   }, [latitude, longitude, error]);
 
   function handleResponse(response) {
@@ -49,7 +47,7 @@ function App() {
 
   function getWeather(latitude, longitude) {
     return fetch(`${process.env.REACT_APP_API_URL}/weather/?lat=${latitude}&lon=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
-      .then(res => res.json())
+      .then(res => handleResponse(res))
       .then(weather => {
         if (Object.entries(weather).length) {
           const mappedData = mapDataToWeatherInterface(weather);

@@ -23,6 +23,7 @@ function Weather({ weatherData }) {
     const refresh = () => {
         window.location.reload();
     }
+    
     let weatherData = null;
 
     if (weatherData.weather[0].main === 'Snow') {
