@@ -26,18 +26,18 @@ function Forecast(props, { weatherData }) {
 
         let weatherIcon = null;
     
-        if (item.description === 'Thunderstorm') {
-          weatherIcon = <FontAwesomeIcon icon={faBolt} />;
-        }else if (item.description === 'Drizzle') {
-          weatherIcon = <FontAwesomeIcon icon={faCloudRain} />;
-        } else if (item.description === 'Rain') {
+        if (item.description === 'Rain') {
           weatherIcon = <FontAwesomeIcon icon={faCloudShowersHeavy} />;
-        } else if (item.description === 'Snow') {
-          weatherIcon = <FontAwesomeIcon icon={faSnowflake} />;
+        }else if (item.description === 'Thunderstorm') {
+          weatherIcon = <FontAwesomeIcon icon={faBolt} />;
         } else if (item.description === 'Clear') {
           weatherIcon = <FontAwesomeIcon icon={faSun} />;
+        } else if (item.description === 'Snow') {
+          weatherIcon = <FontAwesomeIcon icon={faSnowflake} />;
         } else if (item.description === 'Clouds') {
           weatherIcon = <FontAwesomeIcon icon={faCloud} />;
+        } else if (item.description === 'Drizzle') {
+          weatherIcon = <FontAwesomeIcon icon={faCloudRain} />;
         } else {
           weatherIcon = <FontAwesomeIcon icon={faSmog} />;
         }
@@ -56,8 +56,12 @@ function Forecast(props, { weatherData }) {
           </div>
         )
       })
+
+
     return (
-        <div>Forecast</div>
+        <div>
+            <List aria-label="forecast data">{results}</List>
+        </div>
     )
 }
 
