@@ -37,7 +37,15 @@ function App() {
 
 
 
-  }, [latitude, longitude]);
+  }, [latitude, longitude, error]);
+
+  function handleResponse(response) {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error("Please Enable your Location in your browser!");
+    }
+  }
 
   function getWeather(latitude, longitude) {
     return fetch(`${process.env.REACT_APP_API_URL}/weather/?lat=${latitude}&lon=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
@@ -50,7 +58,7 @@ function App() {
       });
   }
 
-  function getForecast(lat, long) {
+  function getForecast(latitude, longitude) {
     return fetch(
       `${process.env.REACT_APP_API_URL}/forecast/?lat=${latitude}&lon=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`
     )
@@ -79,9 +87,9 @@ function App() {
 
   return (
     <div className="App">
-      {(typeof data.main != 'undefined') ? (
+      {(typeof weatherData.main != 'undefined') ? (
         <div>
-          <Weather weatherData={data} />
+          <Weather weatherData={weatherData} />
           <Forecast forecast={forecast} weatherData={weatherData} />
         </div>
       ) : (
