@@ -17,7 +17,7 @@ function App() {
       setLongitude(position.coords.longitude);
     });
 
-    getWeather(lat, long)
+    getWeather(latitude, longitude)
       .then(weather => {
         setWeatherData(weather);
         setError(null);
@@ -26,7 +26,7 @@ function App() {
         setError(err.message);
       });
 
-    getForecast(lat, long)
+    getForecast(latitude, longitude)
       .then(data => {
         setForecast(data);
         setError(null);
@@ -40,7 +40,7 @@ function App() {
   }, [latitude, longitude]);
 
   function getWeather(latitude, longitude) {
-    return fetch(`${process.env.REACT_APP_API_URL}/weather/?latitude=${latitude}&longitude=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
+    return fetch(`${process.env.REACT_APP_API_URL}/weather/?lat=${latitude}&lon=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
       .then(res => res.json())
       .then(weather => {
         if (Object.entries(weather).length) {
@@ -52,7 +52,7 @@ function App() {
 
   function getForecast(lat, long) {
     return fetch(
-      `${process.env.REACT_APP_API_URL}/forecast/?lat=${lat}&lon=${long}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`
+      `${process.env.REACT_APP_API_URL}/forecast/?lat=${latitude}&lon=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`
     )
       .then(res => handleResponse(res))
       .then(forecastData => {
@@ -62,6 +62,19 @@ function App() {
             .map(mapDataToWeatherInterface);
         }
       });
+  }
+
+  function mapDataToWeatherInterface(data) {
+    const mapped = {
+      date: data.dt * 1000,
+      description: data.weather[0].main,
+      temperature: Math.round(data.main.temp),
+    };
+    if (data.dt_txt) {
+      mapped.dt_txt = data.dt_txt;
+    }
+
+    return mapped;
   }
 
   return (
