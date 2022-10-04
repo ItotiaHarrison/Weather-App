@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Weather from './components/Weather';
 import './App.css';
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
 
     return (
       <div className="App">
-
+        <Weather />
       </div>
     );
   }
