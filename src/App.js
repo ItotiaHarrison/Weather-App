@@ -1,102 +1,96 @@
-import React, { useEffect, useState } from 'react';
-import Weather from './components/Weather';
-import Forecast from './components/Forecast';
-import { Dimmer, Loader } from 'semantic-ui-react';
-import './App.css';
+import React, { useState } from "react";
+const api = {
+  key: "916e3b282eee9f80686f9ae88f239db6",
+  base: "https://api.openweathermap.org/data/2.5/",
+};
 
 function App() {
-  const [latitude, setLatitude] = useState([]);
-  const [longitude, setLongitude] = useState([]);
-  const [weatherData, setWeatherData] = useState([]);
-  const [forecast, setForecast] = useState([]);
-  const [error, setError] = useState(null);
+  const [query, setQuery] = useState("");
+  const [weather, setWeather] = useState({});
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(function (position) {
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
-    });
-
-    getWeather(latitude, longitude)
-      .then(weather => {
-        setWeatherData(weather);
-        setError(null);
-      })
-      .catch(err => {
-        setError(err.message);
-      });
-
-    getForecast(latitude, longitude)
-      .then(data => {
-        setForecast(data);
-        setError(null);
-      })
-      .catch(err => {
-        setError(err.message);
-      });
-
-  }, [latitude, longitude, error]);
-
-  function handleResponse(response) {
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error("Please Enable your Location in your browser!");
+  const search = (evt) => {
+    if (evt.key === "Enter") {
+      fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
+        .then((res) => res.json())
+        .then((result) => {
+          setWeather(result);
+          setQuery("");
+          console.log(result);
+        });
     }
-  }
+  };
 
-  function getWeather(latitude, longitude) {
-    return fetch(`${process.env.REACT_APP_API_URL}/weather/?lat=${latitude}&lon=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`)
-      .then(res => handleResponse(res))
-      .then(weather => {
-        if (Object.entries(weather).length) {
-          const mappedData = mapDataToWeatherInterface(weather);
-          return mappedData;
-        }
-      });
-  }
+  const dateBuilder = (d) => {
+    let months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    let days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
 
-  function getForecast(latitude, longitude) {
-    return fetch(
-      `${process.env.REACT_APP_API_URL}/forecast/?lat=${latitude}&lon=${longitude}&units=metric&APPID=${process.env.REACT_APP_API_KEY}`
-    )
-      .then(res => handleResponse(res))
-      .then(forecastData => {
-        if (Object.entries(forecastData).length) {
-          return forecastData.list
-            .filter(forecast => forecast.dt_txt.match(/09:00:00/))
-            .map(mapDataToWeatherInterface);
-        }
-      });
-  }
+    let day = days[d.getDay()];
+    let date = d.getDate();
+    let month = months[d.getMonth()];
+    let year = d.getFullYear();
 
-  function mapDataToWeatherInterface(data) {
-    const mapped = {
-      date: data.dt * 1000,
-      description: data.weather[0].main,
-      temperature: Math.round(data.main.temp),
-    };
-    if (data.dt_txt) {
-      mapped.dt_txt = data.dt_txt;
-    }
-
-    return mapped;
-  }
+    return `${day} ${date} ${month} ${year}`;
+  };
 
   return (
-    <div className="App">
-      {(typeof weatherData.main != 'undefined') ? (
-        <div>
-          <Weather weatherData={weatherData} />
-          <Forecast forecast={forecast} weatherData={weatherData} />
+    <div
+      className={
+        typeof weather.main != "undefined"
+          ? weather.main.temp > 16
+            ? "app warm"
+            : "app"
+          : "app"
+      }
+    >
+      <main>
+        <div className="search-box">
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search..."
+            onChange={(e) => setQuery(e.target.value)}
+            value={query}
+            onKeyPress={search}
+          />
         </div>
-      ) : (
-        <div>
-          <Dimmer active>
-            <Loader>Loading..</Loader>
-          </Dimmer>
-        </div>
-      )}
+        {typeof weather.main != "undefined" ? (
+          <div>
+            <div className="location-box">
+              <div className="location">
+                {weather.name}, {weather.sys.country}
+              </div>
+              <div className="date">{dateBuilder(new Date())}</div>
+            </div>
+            <div className="weather-box">
+              <div className="temp">{Math.round(weather.main.temp)}°c</div>
+              <div className="weather">{weather.weather[0].main}</div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+      </main>
     </div>
   );
 }
